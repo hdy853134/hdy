@@ -3,7 +3,7 @@
 
 use std::{convert::Infallible, sync::Arc};
 
-use crate::{validator_cache::ValidatorSetCache, GCPBigQueryConfig, TelemetryServiceConfig};
+use crate::{validator_cache::ValidatorSetCache, GCPBigQueryConfig, TelemetryServiceConfig, clients::humio::{IngestClient, self}};
 use aptos_crypto::noise;
 use gcp_bigquery_client::Client as BQClient;
 use jsonwebtoken::{DecodingKey, EncodingKey};
@@ -19,6 +19,8 @@ pub struct Context {
 
     pub jwt_encoding_key: EncodingKey,
     pub jwt_decoding_key: DecodingKey,
+
+    pub humio_client: humio::IngestClient,
 }
 
 impl Context {
@@ -26,6 +28,7 @@ impl Context {
         config: &TelemetryServiceConfig,
         validator_cache: ValidatorSetCache,
         gcp_bigquery_client: Option<BQClient>,
+        humio_client: humio::IngestClient,
     ) -> Self {
         let private_key = config.server_private_key.private_key();
         Self {
@@ -37,6 +40,8 @@ impl Context {
 
             jwt_encoding_key: EncodingKey::from_secret(config.jwt_signing_key.as_bytes()),
             jwt_decoding_key: DecodingKey::from_secret(config.jwt_signing_key.as_bytes()),
+            
+            humio_client,
         }
     }
 

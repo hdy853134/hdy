@@ -4,11 +4,13 @@
 use std::collections::HashMap;
 
 use crate::GCPBigQueryConfig;
+use crate::clients::humio::{IngestClient, self};
 use crate::{context::Context, index, validator_cache::ValidatorSetCache, TelemetryServiceConfig};
 use aptos_config::keys::ConfigKey;
 use aptos_crypto::{x25519, Uniform};
 use aptos_rest_client::aptos_api_types::mime_types;
 use rand::SeedableRng;
+use reqwest::Url;
 use serde_json::Value;
 use warp::http::header::CONTENT_TYPE;
 use warp::http::Response;
@@ -32,10 +34,13 @@ pub async fn new_test_context() -> TestContext {
             dataset_id: String::from("2"),
             table_id: String::from("3"),
         },
+        humio_url: "".into(),
+        humio_auth_token: "".into(),
     };
     let cache = ValidatorSetCache::new(aptos_infallible::RwLock::new(HashMap::new()));
+    let humio_client = humio::IngestClient::new(Url::parse("http://localhost/".into()).unwrap(), config.humio_auth_token.clone());
 
-    TestContext::new(Context::new(config, cache, None))
+    TestContext::new(Context::new(config, cache, None, humio_client))
 }
 
 #[derive(Clone)]

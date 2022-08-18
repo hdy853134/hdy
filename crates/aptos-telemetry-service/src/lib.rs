@@ -11,13 +11,14 @@ use aptos_logger::info;
 use aptos_types::chain_id::ChainId;
 use clap::Parser;
 use gcp_bigquery_client::Client;
+use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use warp::{Filter, Reply};
 
 use crate::{
     context::Context,
     index::routes,
-    validator_cache::{ValidatorSetCache, ValidatorSetCacheUpdater},
+    validator_cache::{ValidatorSetCache, ValidatorSetCacheUpdater}, clients::humio::{IngestClient, self},
 };
 
 mod auth;
@@ -28,10 +29,12 @@ mod index;
 mod jwt_auth;
 mod log_ingest;
 mod rest_client;
+mod clients;
 #[cfg(any(test))]
 pub(crate) mod tests;
 pub mod types;
 mod validator_cache;
+mod constants;
 
 #[derive(Clone, Debug, Parser)]
 #[clap(name = "Aptos Telemetry Service", author, version)]
@@ -55,7 +58,8 @@ impl AptosTelemetryServiceArgs {
         let cache = ValidatorSetCache::new(aptos_infallible::RwLock::new(HashMap::new()));
         let gcp_bigquery_client =
             Client::from_service_account_key_file(&config.gcp_sa_key_file).await;
-        let context = Context::new(&config, cache.clone(), Some(gcp_bigquery_client));
+        let humio_client = humio::IngestClient::new(Url::parse(&config.humio_url).unwrap(), config.humio_auth_token.clone());
+        let context = Context::new(&config, cache.clone(), Some(gcp_bigquery_client), humio_client);
 
         ValidatorSetCacheUpdater::new(cache, &config).run();
 
@@ -95,6 +99,8 @@ pub struct TelemetryServiceConfig {
     pub update_interval: u64,
     pub gcp_sa_key_file: String,
     pub gcp_bq_config: GCPBigQueryConfig,
+    pub humio_url: String,
+    pub humio_auth_token: String,
 }
 
 impl TelemetryServiceConfig {
