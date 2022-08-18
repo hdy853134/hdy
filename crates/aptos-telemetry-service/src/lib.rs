@@ -17,7 +17,7 @@ use warp::{Filter, Reply};
 use crate::{
     context::Context,
     index::routes,
-    validator_cache::{ValidatorSetCache, ValidatorSetCacheUpdater},
+    validator_cache::{PeerSetCache, PeerSetCacheUpdater},
 };
 
 mod auth;
@@ -51,12 +51,14 @@ impl AptosTelemetryServiceArgs {
             });
         info!("Using config {:?}", &config);
 
-        let cache = ValidatorSetCache::new(aptos_infallible::RwLock::new(HashMap::new()));
+        let validators_cache = PeerSetCache::new(aptos_infallible::RwLock::new(HashMap::new()));
+        let vfns_cache = PeerSetCache::new(aptos_infallible::RwLock::new(HashMap::new()));
+
         let gcp_bigquery_client =
             Client::from_service_account_key_file(&config.gcp_sa_key_file).await;
-        let context = Context::new(&config, cache.clone(), Some(gcp_bigquery_client));
+        let context = Context::new(&config, validators_cache.clone(), vfns_cache.clone(), Some(gcp_bigquery_client));
 
-        ValidatorSetCacheUpdater::new(cache, &config).run();
+        PeerSetCacheUpdater::new(validators_cache, vfns_cache, &config).run();
 
         Self::serve(&config, routes(context)).await;
     }

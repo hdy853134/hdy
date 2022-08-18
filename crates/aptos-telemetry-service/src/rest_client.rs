@@ -56,9 +56,22 @@ impl RestClient {
             .await
     }
 
+    pub async fn validator_set_fullnode_addresses(
+        &self,
+    ) -> Result<(Vec<(PeerId, Vec<NetworkAddress>)>, State)> {
+        self.validator_set_addresses(|info| Self::fullnode_addresses(info.config()))
+            .await
+    }
+
     fn validator_addresses(config: &ValidatorConfig) -> Result<Vec<NetworkAddress>> {
         config
             .validator_network_addresses()
+            .map_err(|e| anyhow!("unable to parse network address {}", e.to_string()))
+    }
+
+    fn fullnode_addresses(config: &ValidatorConfig) -> Result<Vec<NetworkAddress>> {
+        config
+            .fullnode_network_addresses()
             .map_err(|e| anyhow!("unable to parse network address {}", e.to_string()))
     }
 

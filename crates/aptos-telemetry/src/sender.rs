@@ -3,7 +3,7 @@
 
 use crate::metrics;
 use anyhow::{anyhow, Error};
-use aptos_config::config::NodeConfig;
+use aptos_config::config::{NodeConfig, RoleType};
 use aptos_crypto::{
     noise::{self, NoiseConfig},
     x25519,
@@ -43,6 +43,7 @@ pub(crate) struct TelemetrySender {
     base_url: String,
     chain_id: ChainId,
     peer_id: PeerId,
+    role_type: RoleType,
     client: reqwest::Client,
     auth_context: Arc<AuthContext>,
 }
@@ -53,6 +54,7 @@ impl TelemetrySender {
             base_url: base_url.into(),
             chain_id,
             peer_id: node_config.peer_id().unwrap_or(PeerId::ZERO),
+            role_type: node_config.base.role,
             client: reqwest::Client::new(),
             auth_context: Arc::new(AuthContext::new(node_config)),
         }
@@ -189,6 +191,7 @@ impl TelemetrySender {
         let auth_request = AuthRequest {
             chain_id: self.chain_id,
             peer_id: self.peer_id,
+            role_type: self.role_type,
             server_public_key,
             handshake_msg: client_noise_msg,
         };

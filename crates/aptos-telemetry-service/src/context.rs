@@ -3,7 +3,7 @@
 
 use std::{convert::Infallible, sync::Arc};
 
-use crate::{validator_cache::ValidatorSetCache, GCPBigQueryConfig, TelemetryServiceConfig};
+use crate::{validator_cache::PeerSetCache, GCPBigQueryConfig, TelemetryServiceConfig};
 use aptos_crypto::noise;
 use gcp_bigquery_client::Client as BQClient;
 use jsonwebtoken::{DecodingKey, EncodingKey};
@@ -12,7 +12,8 @@ use warp::Filter;
 #[derive(Clone)]
 pub struct Context {
     noise_config: Arc<noise::NoiseConfig>,
-    validator_cache: ValidatorSetCache,
+    validator_cache: PeerSetCache,
+    vfn_cache: PeerSetCache,
 
     pub gcp_bq_client: Option<BQClient>,
     pub gcp_bq_config: GCPBigQueryConfig,
@@ -24,13 +25,15 @@ pub struct Context {
 impl Context {
     pub fn new(
         config: &TelemetryServiceConfig,
-        validator_cache: ValidatorSetCache,
+        validator_cache: PeerSetCache,
+        vfn_cache: PeerSetCache,
         gcp_bigquery_client: Option<BQClient>,
     ) -> Self {
         let private_key = config.server_private_key.private_key();
         Self {
             noise_config: Arc::new(noise::NoiseConfig::new(private_key)),
             validator_cache,
+            vfn_cache,
 
             gcp_bq_client: gcp_bigquery_client,
             gcp_bq_config: config.gcp_bq_config.clone(),
@@ -44,8 +47,12 @@ impl Context {
         warp::any().map(move || self.clone())
     }
 
-    pub fn validator_cache(&self) -> ValidatorSetCache {
+    pub fn validator_cache(&self) -> PeerSetCache {
         self.validator_cache.clone()
+    }
+
+    pub fn vfn_cache(&self) -> PeerSetCache {
+        self.vfn_cache.clone()
     }
 
     pub fn noise_config(&self) -> Arc<noise::NoiseConfig> {
