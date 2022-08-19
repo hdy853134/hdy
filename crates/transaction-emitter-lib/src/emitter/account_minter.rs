@@ -27,7 +27,7 @@ use core::{
 use futures::future::try_join_all;
 use rand::{rngs::StdRng, seq::SliceRandom};
 use rand_core::SeedableRng;
-use std::path::Path;
+use std::{path::Path, sync::atomic::AtomicUsize};
 
 #[derive(Debug)]
 pub struct AccountMinter<'t> {
@@ -353,15 +353,38 @@ pub async fn execute_and_wait_transactions(
         account.address()
     );
 
-    let pending_txns: Vec<Response<PendingTransaction>> = try_join_all(
-        txns.iter()
-            .map(|t| RETRY_POLICY.retry(move || client.submit(t))),
-    )
-    .await?;
+    async fn submit_batch(
+        client: &RestClient,
+        done: &AtomicUsize,
+        txns: &[SignedTransaction],
+    ) -> Result<Response<Vec<PendingTransaction>>> {
+        let cursor = done.load(std::sync::atomic::Ordering::Relaxed);
+        let result = client.submit_batch(&txns[cursor..]).await;
+        // TODO - see how to pass fields on error responses?
+        if let Err(e) = &result {
+            let message = e.to_string();
+            let pattern = "partial [";
+            if let Some(pos) = message.find(pattern) {
+                if let Some(idx_str) = message[pos + pattern.len()..].split(']').next() {
+                    if let Ok(idx) = idx_str.parse::<usize>() {
+                        done.fetch_add(idx, std::sync::atomic::Ordering::Relaxed);
+                    }
+                }
+            }
+        }
+        result
+    }
 
-    for pt in pending_txns {
+    let done = AtomicUsize::new(0);
+    let done_ref = &done;
+    let txns_ref = &txns;
+    let pending_txns = RETRY_POLICY
+        .retry(move || submit_batch(client, done_ref, txns_ref))
+        .await?;
+
+    for pt in pending_txns.into_inner() {
         client
-            .wait_for_transaction(&pt.into_inner())
+            .wait_for_transaction(&pt)
             .await
             .map_err(|e| format_err!("Failed to wait for transactions: {}", e))?;
     }

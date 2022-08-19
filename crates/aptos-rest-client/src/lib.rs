@@ -176,6 +176,24 @@ impl Client {
         self.json(response).await
     }
 
+    pub async fn submit_batch(
+        &self,
+        txns: &[SignedTransaction],
+    ) -> Result<Response<Vec<PendingTransaction>>> {
+        let txn_payload = bcs::to_bytes(&txns.to_vec())?;
+        let url = self.build_path("transactions/batch")?;
+
+        let response = self
+            .inner
+            .post(url)
+            .header(CONTENT_TYPE, BCS_CONTENT_TYPE)
+            .body(txn_payload)
+            .send()
+            .await?;
+
+        self.json(response).await
+    }
+
     pub async fn submit_and_wait(&self, txn: &SignedTransaction) -> Result<Response<Transaction>> {
         self.submit(txn).await?;
         self.wait_for_signed_transaction(txn).await

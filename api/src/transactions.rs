@@ -46,6 +46,11 @@ generate_error_response!(
 type SubmitTransactionResult<T> =
     poem::Result<SubmitTransactionResponse<T>, SubmitTransactionError>;
 
+generate_success_response!(SubmitTransactionsBatchResponse, (202, Accepted));
+
+type SubmitTransactionsBatchResult<T> =
+    poem::Result<SubmitTransactionsBatchResponse<T>, SubmitTransactionError>;
+
 type SimulateTransactionResult<T> = poem::Result<BasicResponse<T>, SubmitTransactionError>;
 
 // TODO: Consider making both content types accept either
@@ -58,6 +63,20 @@ type SimulateTransactionResult<T> = poem::Result<BasicResponse<T>, SubmitTransac
 pub enum SubmitTransactionPost {
     #[oai(content_type = "application/json")]
     Json(Json<SubmitTransactionRequest>),
+
+    // TODO: Since I don't want to impl all the Poem derives on SignedTransaction,
+    // find a way to at least indicate in the spec that it expects a SignedTransaction.
+    // TODO: https://github.com/aptos-labs/aptos-core/issues/2275
+    #[oai(content_type = "application/x.aptos.signed_transaction+bcs")]
+    Bcs(Bcs),
+}
+
+// We need a custom type here because we use different types for each of the
+// content types possible for the POST data.
+#[derive(ApiRequest, Debug)]
+pub enum SubmitTransactionsBatchPost {
+    #[oai(content_type = "application/json")]
+    Json(Json<Vec<SubmitTransactionRequest>>),
 
     // TODO: Since I don't want to impl all the Poem derives on SignedTransaction,
     // find a way to at least indicate in the spec that it expects a SignedTransaction.
@@ -197,6 +216,30 @@ impl TransactionsApi {
         fail_point_poem("endpoint_submit_transaction")?;
         let signed_transaction = self.get_signed_transaction(data)?;
         self.create(&accept_type, signed_transaction).await
+    }
+
+    #[oai(
+        path = "/transactions/batch",
+        method = "post",
+        operation_id = "submit_batch_transactions",
+        tag = "ApiTags::Transactions"
+    )]
+    async fn submit_transactions_batch(
+        &self,
+        accept_type: AcceptType,
+        data: SubmitTransactionsBatchPost,
+    ) -> SubmitTransactionsBatchResult<Vec<PendingTransaction>> {
+        fail_point_poem("endpoint_submit_batch_transactions")?;
+        let signed_transactions_batch = self.get_signed_transactions_batch(data)?;
+        if self.context.max_submit_transaction_batch_size() < signed_transactions_batch.len() {
+            return Err(SubmitTransactionError::bad_request_str(&format!(
+                "Submitted too many transactions: {}, while limit is {}",
+                signed_transactions_batch.len(),
+                self.context.max_submit_transaction_batch_size(),
+            )));
+        }
+        self.create_batch(&accept_type, signed_transactions_batch)
+            .await
     }
 
     /// Simulate transaction
@@ -466,6 +509,32 @@ impl TransactionsApi {
         }
     }
 
+    fn get_signed_transactions_batch(
+        &self,
+        data: SubmitTransactionsBatchPost,
+    ) -> Result<Vec<SignedTransaction>, SubmitTransactionError> {
+        match data {
+            SubmitTransactionsBatchPost::Bcs(data) => {
+                let signed_transaction = bcs::from_bytes(&data.0)
+                    .context("Failed to deserialize input into SignedTransaction")
+                    .map_err(SubmitTransactionError::bad_request)?;
+                Ok(signed_transaction)
+            }
+            SubmitTransactionsBatchPost::Json(data) => data
+                .0
+                .into_iter()
+                .map(|txn| {
+                    self.context
+                        .move_resolver_poem()?
+                        .as_converter(self.context.db.clone())
+                        .try_into_signed_transaction_poem(txn, self.context.chain_id())
+                        .context("Failed to create SignedTransaction from SubmitTransactionRequest")
+                        .map_err(SubmitTransactionError::bad_request)
+                })
+                .collect(),
+        }
+    }
+
     async fn create(
         &self,
         accept_type: &AcceptType,
@@ -507,6 +576,64 @@ impl TransactionsApi {
                 mempool_status,
             ))),
         }
+    }
+
+    async fn create_batch(
+        &self,
+        accept_type: &AcceptType,
+        txns: Vec<SignedTransaction>,
+    ) -> SubmitTransactionsBatchResult<Vec<PendingTransaction>> {
+        let ledger_info = self.context.get_latest_ledger_info()?;
+        let mut pending_txns = Vec::new();
+        for txn in txns {
+            let (mempool_status, vm_status_opt) = self
+                .context
+                .submit_transaction(txn.clone())
+                .await
+                .context("Mempool failed to initially evaluate submitted transaction")
+                .map_err(SubmitTransactionError::internal)?;
+            match mempool_status.code {
+                MempoolStatusCode::Accepted => {
+                    let resolver = self.context.move_resolver_poem()?;
+                    let pending_txn = resolver
+                        .as_converter(self.context.db.clone())
+                        .try_into_pending_transaction_poem(txn)
+                        .context("Failed to build PendingTransaction from mempool response, even though it said the request was accepted")
+                        .map_err(SubmitTransactionError::internal)?;
+                    pending_txns.push(pending_txn);
+                }
+                MempoolStatusCode::MempoolIsFull => {
+                    return Err(SubmitTransactionError::insufficient_storage_str(&format!(
+                        "partial [{}] ok, next failed: {}",
+                        pending_txns.len(),
+                        &mempool_status.message
+                    )))
+                }
+                MempoolStatusCode::VmError => {
+                    return Err(SubmitTransactionError::bad_request_str(&format!(
+                        "partial [{}] ok, next failed: invalid transaction: {}",
+                        pending_txns.len(),
+                        vm_status_opt
+                            .map(|s| format!("{:?}", s))
+                            .unwrap_or_else(|| "UNKNOWN".to_owned())
+                    )))
+                }
+                _ => {
+                    return Err(SubmitTransactionError::bad_request_str(&format!(
+                        "partial [{}] ok, next failed: transaction is rejected: {}",
+                        pending_txns.len(),
+                        mempool_status,
+                    )))
+                }
+            }
+        }
+
+        SubmitTransactionsBatchResponse::try_from_rust_value((
+            pending_txns,
+            &ledger_info,
+            SubmitTransactionsBatchResponseStatus::Accepted,
+            accept_type,
+        ))
     }
 
     // TODO: This returns a Vec<Transaction>, but is it possible for a single
