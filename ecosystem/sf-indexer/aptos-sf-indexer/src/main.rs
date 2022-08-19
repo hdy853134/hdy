@@ -84,7 +84,7 @@ async fn main() -> Result<(), Error> {
         package.modules.clone(),
         substream_module_name.to_string(),
         start_block,
-        start_block + 500,
+        i64::MAX,
     );
 
     let mut block_height = start_block as u64;
