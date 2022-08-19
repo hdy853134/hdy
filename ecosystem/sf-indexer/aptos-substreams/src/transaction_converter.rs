@@ -217,7 +217,11 @@ fn parse_multi_signature(
         signer = addr;
     }
     for (index, signature) in s.signatures.iter().enumerate() {
-        let public_key = s.public_keys.get(s.public_key_indices.clone()[index] as usize).unwrap().clone();
+        let public_key = s
+            .public_keys
+            .get(s.public_key_indices.clone()[index] as usize)
+            .unwrap()
+            .clone();
         signatures.push(SignatureOutput {
             version: info.version,
             signer: signer.clone(),

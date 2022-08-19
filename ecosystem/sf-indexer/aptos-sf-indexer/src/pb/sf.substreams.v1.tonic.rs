@@ -1,3 +1,6 @@
+// Copyright (c) Aptos
+// SPDX-License-Identifier: Apache-2.0
+
 // @generated
 /// Generated client implementations.
 pub mod stream_client {
@@ -42,9 +45,8 @@ pub mod stream_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + Send + Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + Send + Sync,
         {
             StreamClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -66,24 +68,19 @@ pub mod stream_client {
         pub async fn blocks(
             &mut self,
             request: impl tonic::IntoRequest<super::Request>,
-        ) -> Result<
-            tonic::Response<tonic::codec::Streaming<super::Response>>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> Result<tonic::Response<tonic::codec::Streaming<super::Response>>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/sf.substreams.v1.Stream/Blocks",
-            );
-            self.inner.server_streaming(request.into_request(), path, codec).await
+            let path = http::uri::PathAndQuery::from_static("/sf.substreams.v1.Stream/Blocks");
+            self.inner
+                .server_streaming(request.into_request(), path, codec)
+                .await
         }
     }
 }
@@ -95,9 +92,7 @@ pub mod stream_server {
     #[async_trait]
     pub trait Stream: Send + Sync + 'static {
         ///Server streaming response type for the Blocks method.
-        type BlocksStream: futures_core::Stream<
-                Item = Result<super::Response, tonic::Status>,
-            >
+        type BlocksStream: futures_core::Stream<Item = Result<super::Response, tonic::Status>>
             + Send
             + 'static;
         async fn blocks(
@@ -124,10 +119,7 @@ pub mod stream_server {
                 send_compression_encodings: Default::default(),
             }
         }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -155,10 +147,7 @@ pub mod stream_server {
         type Response = http::Response<tonic::body::BoxBody>;
         type Error = std::convert::Infallible;
         type Future = BoxFuture<Self::Response, Self::Error>;
-        fn poll_ready(
-            &mut self,
-            _cx: &mut Context<'_>,
-        ) -> Poll<Result<(), Self::Error>> {
+        fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
             Poll::Ready(Ok(()))
         }
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
@@ -167,14 +156,11 @@ pub mod stream_server {
                 "/sf.substreams.v1.Stream/Blocks" => {
                     #[allow(non_camel_case_types)]
                     struct BlocksSvc<T: Stream>(pub Arc<T>);
-                    impl<T: Stream> tonic::server::ServerStreamingService<super::Request>
-                    for BlocksSvc<T> {
+                    impl<T: Stream> tonic::server::ServerStreamingService<super::Request> for BlocksSvc<T> {
                         type Response = super::Response;
                         type ResponseStream = T::BlocksStream;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::ResponseStream>,
-                            tonic::Status,
-                        >;
+                        type Future =
+                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::Request>,
@@ -191,28 +177,23 @@ pub mod stream_server {
                         let inner = inner.0;
                         let method = BlocksSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            );
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
                         let res = grpc.server_streaming(method, req).await;
                         Ok(res)
                     };
                     Box::pin(fut)
                 }
-                _ => {
-                    Box::pin(async move {
-                        Ok(
-                            http::Response::builder()
-                                .status(200)
-                                .header("grpc-status", "12")
-                                .header("content-type", "application/grpc")
-                                .body(empty_body())
-                                .unwrap(),
-                        )
-                    })
-                }
+                _ => Box::pin(async move {
+                    Ok(http::Response::builder()
+                        .status(200)
+                        .header("grpc-status", "12")
+                        .header("content-type", "application/grpc")
+                        .body(empty_body())
+                        .unwrap())
+                }),
             }
         }
     }

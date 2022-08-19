@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 //! Indexer is used to index blockchain data into Postgres
-//!
-//! TODO: Examples
-//!
 #![forbid(unsafe_code)]
 
 use aptos_logger::info;

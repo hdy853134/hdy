@@ -194,7 +194,8 @@ pub trait SubstreamProcessor: Send + Sync + Debug {
                     diesel::insert_into(ledger_infos::table).values(LedgerInfo {
                         chain_id: input_chain_id,
                     }),
-                ).unwrap();
+                )
+                .unwrap();
             }
         }
         self.set_is_chain_id_verified();
@@ -219,49 +220,49 @@ pub fn get_start_block(pool: &PgDbPool, substream_module_name: &String) -> Optio
         .get()
         .expect("Could not get connection for checking starting block");
     let sql = "
-        WITH boundaries AS 
+        WITH boundaries AS
         (
             SELECT
                 MAX(block_height) AS MAX_V,
-                MIN(block_height) AS MIN_V 
+                MIN(block_height) AS MIN_V
             FROM
-                indexer_states 
+                indexer_states
             WHERE
-                substream_module = $1 
-                AND success = TRUE 
+                substream_module = $1
+                AND success = TRUE
         ),
-        gap AS 
+        gap AS
         (
             SELECT
-                MIN(block_height) + 1 AS maybe_gap 
+                MIN(block_height) + 1 AS maybe_gap
             FROM
                 (
                     SELECT
                         block_height,
-                        LEAD(block_height) OVER ( 
+                        LEAD(block_height) OVER (
                     ORDER BY
-                        block_height ASC) AS next_block_height 
+                        block_height ASC) AS next_block_height
                     FROM
                         indexer_states,
-                        boundaries 
+                        boundaries
                     WHERE
-                        substream_module = $1 
-                        AND success = TRUE 
-                        AND block_height >= MAX_V - 1000000 
-                ) a 
+                        substream_module = $1
+                        AND success = TRUE
+                        AND block_height >= MAX_V - 1000000
+                ) a
             WHERE
                 block_height + 1 <> next_block_height
         )
         SELECT
             CASE
                 WHEN
-                    MIN_V <> 0 
+                    MIN_V <> 0
                 THEN
-                    0 
+                    0
                 ELSE
-                    COALESCE(maybe_gap, MAX_V + 1) 
+                    COALESCE(maybe_gap, MAX_V + 1)
             END
-            AS block_height 
+            AS block_height
         FROM
             gap, boundaries
         ";

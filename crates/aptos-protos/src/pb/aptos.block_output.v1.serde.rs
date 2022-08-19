@@ -1,3 +1,6 @@
+// Copyright (c) Aptos
+// SPDX-License-Identifier: Apache-2.0
+
 // @generated
 impl serde::Serialize for BlockMetadataTransactionOutput {
     #[allow(deprecated)]
@@ -31,7 +34,8 @@ impl serde::Serialize for BlockMetadataTransactionOutput {
         if self.epoch != 0 {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.BlockMetadataTransactionOutput", len)?;
+        let mut struct_ser = serializer
+            .serialize_struct("aptos.block_output.v1.BlockMetadataTransactionOutput", len)?;
         if self.version != 0 {
             struct_ser.serialize_field("version", ToString::to_string(&self.version).as_str())?;
         }
@@ -42,7 +46,10 @@ impl serde::Serialize for BlockMetadataTransactionOutput {
             struct_ser.serialize_field("round", ToString::to_string(&self.round).as_str())?;
         }
         if !self.previous_block_votes_bitvec.is_empty() {
-            struct_ser.serialize_field("previousBlockVotesBitvec", pbjson::private::base64::encode(&self.previous_block_votes_bitvec).as_str())?;
+            struct_ser.serialize_field(
+                "previousBlockVotesBitvec",
+                pbjson::private::base64::encode(&self.previous_block_votes_bitvec).as_str(),
+            )?;
         }
         if !self.proposer.is_empty() {
             struct_ser.serialize_field("proposer", &self.proposer)?;
@@ -97,7 +104,10 @@ impl<'de> serde::Deserialize<'de> for BlockMetadataTransactionOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -110,7 +120,9 @@ impl<'de> serde::Deserialize<'de> for BlockMetadataTransactionOutput {
                             "version" => Ok(GeneratedField::Version),
                             "id" => Ok(GeneratedField::Id),
                             "round" => Ok(GeneratedField::Round),
-                            "previousBlockVotesBitvec" => Ok(GeneratedField::PreviousBlockVotesBitvec),
+                            "previousBlockVotesBitvec" => {
+                                Ok(GeneratedField::PreviousBlockVotesBitvec)
+                            }
                             "proposer" => Ok(GeneratedField::Proposer),
                             "failedProposerIndices" => Ok(GeneratedField::FailedProposerIndices),
                             "timestamp" => Ok(GeneratedField::Timestamp),
@@ -130,9 +142,12 @@ impl<'de> serde::Deserialize<'de> for BlockMetadataTransactionOutput {
                 formatter.write_str("struct aptos.block_output.v1.BlockMetadataTransactionOutput")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<BlockMetadataTransactionOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<BlockMetadataTransactionOutput, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut version__ = None;
                 let mut id__ = None;
@@ -149,7 +164,8 @@ impl<'de> serde::Deserialize<'de> for BlockMetadataTransactionOutput {
                                 return Err(serde::de::Error::duplicate_field("version"));
                             }
                             version__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Id => {
@@ -163,15 +179,19 @@ impl<'de> serde::Deserialize<'de> for BlockMetadataTransactionOutput {
                                 return Err(serde::de::Error::duplicate_field("round"));
                             }
                             round__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::PreviousBlockVotesBitvec => {
                             if previous_block_votes_bitvec__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("previousBlockVotesBitvec"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "previousBlockVotesBitvec",
+                                ));
                             }
                             previous_block_votes_bitvec__ = Some(
-                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Proposer => {
@@ -182,11 +202,15 @@ impl<'de> serde::Deserialize<'de> for BlockMetadataTransactionOutput {
                         }
                         GeneratedField::FailedProposerIndices => {
                             if failed_proposer_indices__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("failedProposerIndices"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "failedProposerIndices",
+                                ));
                             }
                             failed_proposer_indices__ = Some(
                                 map.next_value::<Vec<::pbjson::private::NumberDeserialize<_>>>()?
-                                    .into_iter().map(|x| x.0).collect()
+                                    .into_iter()
+                                    .map(|x| x.0)
+                                    .collect(),
                             );
                         }
                         GeneratedField::Timestamp => {
@@ -200,7 +224,8 @@ impl<'de> serde::Deserialize<'de> for BlockMetadataTransactionOutput {
                                 return Err(serde::de::Error::duplicate_field("epoch"));
                             }
                             epoch__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                     }
@@ -217,7 +242,11 @@ impl<'de> serde::Deserialize<'de> for BlockMetadataTransactionOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.BlockMetadataTransactionOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.BlockMetadataTransactionOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for BlockOutput {
@@ -237,7 +266,8 @@ impl serde::Serialize for BlockOutput {
         if self.chain_id != 0 {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.BlockOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.BlockOutput", len)?;
         if self.height != 0 {
             struct_ser.serialize_field("height", ToString::to_string(&self.height).as_str())?;
         }
@@ -256,11 +286,7 @@ impl<'de> serde::Deserialize<'de> for BlockOutput {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "height",
-            "transactions",
-            "chainId",
-        ];
+        const FIELDS: &[&str] = &["height", "transactions", "chainId"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -278,7 +304,10 @@ impl<'de> serde::Deserialize<'de> for BlockOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -307,8 +336,8 @@ impl<'de> serde::Deserialize<'de> for BlockOutput {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<BlockOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut height__ = None;
                 let mut transactions__ = None;
@@ -320,7 +349,8 @@ impl<'de> serde::Deserialize<'de> for BlockOutput {
                                 return Err(serde::de::Error::duplicate_field("height"));
                             }
                             height__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Transactions => {
@@ -334,7 +364,8 @@ impl<'de> serde::Deserialize<'de> for BlockOutput {
                                 return Err(serde::de::Error::duplicate_field("chainId"));
                             }
                             chain_id__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                     }
@@ -346,7 +377,11 @@ impl<'de> serde::Deserialize<'de> for BlockOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.BlockOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.BlockOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for EventKeyOutput {
@@ -363,9 +398,13 @@ impl serde::Serialize for EventKeyOutput {
         if !self.account_address.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.EventKeyOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.EventKeyOutput", len)?;
         if self.creation_number != 0 {
-            struct_ser.serialize_field("creationNumber", ToString::to_string(&self.creation_number).as_str())?;
+            struct_ser.serialize_field(
+                "creationNumber",
+                ToString::to_string(&self.creation_number).as_str(),
+            )?;
         }
         if !self.account_address.is_empty() {
             struct_ser.serialize_field("accountAddress", &self.account_address)?;
@@ -379,10 +418,7 @@ impl<'de> serde::Deserialize<'de> for EventKeyOutput {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "creationNumber",
-            "accountAddress",
-        ];
+        const FIELDS: &[&str] = &["creationNumber", "accountAddress"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -399,7 +435,10 @@ impl<'de> serde::Deserialize<'de> for EventKeyOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -427,8 +466,8 @@ impl<'de> serde::Deserialize<'de> for EventKeyOutput {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<EventKeyOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut creation_number__ = None;
                 let mut account_address__ = None;
@@ -439,7 +478,8 @@ impl<'de> serde::Deserialize<'de> for EventKeyOutput {
                                 return Err(serde::de::Error::duplicate_field("creationNumber"));
                             }
                             creation_number__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::AccountAddress => {
@@ -456,7 +496,11 @@ impl<'de> serde::Deserialize<'de> for EventKeyOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.EventKeyOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.EventKeyOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for EventOutput {
@@ -482,7 +526,8 @@ impl serde::Serialize for EventOutput {
         if !self.data.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.EventOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.EventOutput", len)?;
         if self.version != 0 {
             struct_ser.serialize_field("version", ToString::to_string(&self.version).as_str())?;
         }
@@ -490,7 +535,10 @@ impl serde::Serialize for EventOutput {
             struct_ser.serialize_field("key", v)?;
         }
         if self.sequence_number != 0 {
-            struct_ser.serialize_field("sequenceNumber", ToString::to_string(&self.sequence_number).as_str())?;
+            struct_ser.serialize_field(
+                "sequenceNumber",
+                ToString::to_string(&self.sequence_number).as_str(),
+            )?;
         }
         if !self.r#type.is_empty() {
             struct_ser.serialize_field("type", &self.r#type)?;
@@ -507,13 +555,7 @@ impl<'de> serde::Deserialize<'de> for EventOutput {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "version",
-            "key",
-            "sequenceNumber",
-            "type",
-            "data",
-        ];
+        const FIELDS: &[&str] = &["version", "key", "sequenceNumber", "type", "data"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -533,7 +575,10 @@ impl<'de> serde::Deserialize<'de> for EventOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -564,8 +609,8 @@ impl<'de> serde::Deserialize<'de> for EventOutput {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<EventOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut version__ = None;
                 let mut key__ = None;
@@ -579,7 +624,8 @@ impl<'de> serde::Deserialize<'de> for EventOutput {
                                 return Err(serde::de::Error::duplicate_field("version"));
                             }
                             version__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Key => {
@@ -593,7 +639,8 @@ impl<'de> serde::Deserialize<'de> for EventOutput {
                                 return Err(serde::de::Error::duplicate_field("sequenceNumber"));
                             }
                             sequence_number__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Type => {
@@ -619,7 +666,11 @@ impl<'de> serde::Deserialize<'de> for EventOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.EventOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.EventOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for GenesisTransactionOutput {
@@ -633,7 +684,8 @@ impl serde::Serialize for GenesisTransactionOutput {
         if !self.payload.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.GenesisTransactionOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.GenesisTransactionOutput", len)?;
         if !self.payload.is_empty() {
             struct_ser.serialize_field("payload", &self.payload)?;
         }
@@ -646,9 +698,7 @@ impl<'de> serde::Deserialize<'de> for GenesisTransactionOutput {
     where
         D: serde::Deserializer<'de>,
     {
-        const FIELDS: &[&str] = &[
-            "payload",
-        ];
+        const FIELDS: &[&str] = &["payload"];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
@@ -664,7 +714,10 @@ impl<'de> serde::Deserialize<'de> for GenesisTransactionOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -690,9 +743,12 @@ impl<'de> serde::Deserialize<'de> for GenesisTransactionOutput {
                 formatter.write_str("struct aptos.block_output.v1.GenesisTransactionOutput")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<GenesisTransactionOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<GenesisTransactionOutput, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut payload__ = None;
                 while let Some(k) = map.next_key()? {
@@ -710,7 +766,11 @@ impl<'de> serde::Deserialize<'de> for GenesisTransactionOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.GenesisTransactionOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.GenesisTransactionOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for MoveModuleOutput {
@@ -745,7 +805,8 @@ impl serde::Serialize for MoveModuleOutput {
         if self.wsc_index != 0 {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.MoveModuleOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.MoveModuleOutput", len)?;
         if !self.name.is_empty() {
             struct_ser.serialize_field("name", &self.name)?;
         }
@@ -753,7 +814,10 @@ impl serde::Serialize for MoveModuleOutput {
             struct_ser.serialize_field("address", &self.address)?;
         }
         if !self.bytecode.is_empty() {
-            struct_ser.serialize_field("bytecode", pbjson::private::base64::encode(&self.bytecode).as_str())?;
+            struct_ser.serialize_field(
+                "bytecode",
+                pbjson::private::base64::encode(&self.bytecode).as_str(),
+            )?;
         }
         if !self.friends.is_empty() {
             struct_ser.serialize_field("friends", &self.friends)?;
@@ -768,7 +832,8 @@ impl serde::Serialize for MoveModuleOutput {
             struct_ser.serialize_field("isDeleted", &self.is_deleted)?;
         }
         if self.wsc_index != 0 {
-            struct_ser.serialize_field("wscIndex", ToString::to_string(&self.wsc_index).as_str())?;
+            struct_ser
+                .serialize_field("wscIndex", ToString::to_string(&self.wsc_index).as_str())?;
         }
         struct_ser.end()
     }
@@ -811,7 +876,10 @@ impl<'de> serde::Deserialize<'de> for MoveModuleOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -845,8 +913,8 @@ impl<'de> serde::Deserialize<'de> for MoveModuleOutput {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<MoveModuleOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut name__ = None;
                 let mut address__ = None;
@@ -875,7 +943,8 @@ impl<'de> serde::Deserialize<'de> for MoveModuleOutput {
                                 return Err(serde::de::Error::duplicate_field("bytecode"));
                             }
                             bytecode__ = Some(
-                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Friends => {
@@ -907,7 +976,8 @@ impl<'de> serde::Deserialize<'de> for MoveModuleOutput {
                                 return Err(serde::de::Error::duplicate_field("wscIndex"));
                             }
                             wsc_index__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                     }
@@ -924,7 +994,11 @@ impl<'de> serde::Deserialize<'de> for MoveModuleOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.MoveModuleOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.MoveModuleOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for MoveResourceOutput {
@@ -956,7 +1030,8 @@ impl serde::Serialize for MoveResourceOutput {
         if self.wsc_index != 0 {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.MoveResourceOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.MoveResourceOutput", len)?;
         if !self.address.is_empty() {
             struct_ser.serialize_field("address", &self.address)?;
         }
@@ -976,7 +1051,8 @@ impl serde::Serialize for MoveResourceOutput {
             struct_ser.serialize_field("isDeleted", &self.is_deleted)?;
         }
         if self.wsc_index != 0 {
-            struct_ser.serialize_field("wscIndex", ToString::to_string(&self.wsc_index).as_str())?;
+            struct_ser
+                .serialize_field("wscIndex", ToString::to_string(&self.wsc_index).as_str())?;
         }
         struct_ser.end()
     }
@@ -1017,7 +1093,10 @@ impl<'de> serde::Deserialize<'de> for MoveResourceOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -1050,8 +1129,8 @@ impl<'de> serde::Deserialize<'de> for MoveResourceOutput {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<MoveResourceOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut address__ = None;
                 let mut module__ = None;
@@ -1103,7 +1182,8 @@ impl<'de> serde::Deserialize<'de> for MoveResourceOutput {
                                 return Err(serde::de::Error::duplicate_field("wscIndex"));
                             }
                             wsc_index__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                     }
@@ -1119,7 +1199,11 @@ impl<'de> serde::Deserialize<'de> for MoveResourceOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.MoveResourceOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.MoveResourceOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for SignatureOutput {
@@ -1160,7 +1244,8 @@ impl serde::Serialize for SignatureOutput {
         if self.multi_sig_index != 0 {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.SignatureOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.SignatureOutput", len)?;
         if self.version != 0 {
             struct_ser.serialize_field("version", ToString::to_string(&self.version).as_str())?;
         }
@@ -1174,10 +1259,16 @@ impl serde::Serialize for SignatureOutput {
             struct_ser.serialize_field("signatureType", &self.signature_type)?;
         }
         if !self.public_key.is_empty() {
-            struct_ser.serialize_field("publicKey", pbjson::private::base64::encode(&self.public_key).as_str())?;
+            struct_ser.serialize_field(
+                "publicKey",
+                pbjson::private::base64::encode(&self.public_key).as_str(),
+            )?;
         }
         if !self.signature.is_empty() {
-            struct_ser.serialize_field("signature", pbjson::private::base64::encode(&self.signature).as_str())?;
+            struct_ser.serialize_field(
+                "signature",
+                pbjson::private::base64::encode(&self.signature).as_str(),
+            )?;
         }
         if self.threshold != 0 {
             struct_ser.serialize_field("threshold", &self.threshold)?;
@@ -1236,7 +1327,10 @@ impl<'de> serde::Deserialize<'de> for SignatureOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -1272,8 +1366,8 @@ impl<'de> serde::Deserialize<'de> for SignatureOutput {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<SignatureOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut version__ = None;
                 let mut signer__ = None;
@@ -1292,7 +1386,8 @@ impl<'de> serde::Deserialize<'de> for SignatureOutput {
                                 return Err(serde::de::Error::duplicate_field("version"));
                             }
                             version__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Signer => {
@@ -1318,7 +1413,8 @@ impl<'de> serde::Deserialize<'de> for SignatureOutput {
                                 return Err(serde::de::Error::duplicate_field("publicKey"));
                             }
                             public_key__ = Some(
-                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Signature => {
@@ -1326,7 +1422,8 @@ impl<'de> serde::Deserialize<'de> for SignatureOutput {
                                 return Err(serde::de::Error::duplicate_field("signature"));
                             }
                             signature__ = Some(
-                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Threshold => {
@@ -1334,7 +1431,8 @@ impl<'de> serde::Deserialize<'de> for SignatureOutput {
                                 return Err(serde::de::Error::duplicate_field("threshold"));
                             }
                             threshold__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::PublicKeyIndices => {
@@ -1343,7 +1441,9 @@ impl<'de> serde::Deserialize<'de> for SignatureOutput {
                             }
                             public_key_indices__ = Some(
                                 map.next_value::<Vec<::pbjson::private::NumberDeserialize<_>>>()?
-                                    .into_iter().map(|x| x.0).collect()
+                                    .into_iter()
+                                    .map(|x| x.0)
+                                    .collect(),
                             );
                         }
                         GeneratedField::MultiAgentIndex => {
@@ -1351,7 +1451,8 @@ impl<'de> serde::Deserialize<'de> for SignatureOutput {
                                 return Err(serde::de::Error::duplicate_field("multiAgentIndex"));
                             }
                             multi_agent_index__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::MultiSigIndex => {
@@ -1359,7 +1460,8 @@ impl<'de> serde::Deserialize<'de> for SignatureOutput {
                                 return Err(serde::de::Error::duplicate_field("multiSigIndex"));
                             }
                             multi_sig_index__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                     }
@@ -1378,7 +1480,11 @@ impl<'de> serde::Deserialize<'de> for SignatureOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.SignatureOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.SignatureOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for TableItemOutput {
@@ -1413,7 +1519,8 @@ impl serde::Serialize for TableItemOutput {
         if self.wsc_index != 0 {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.TableItemOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.TableItemOutput", len)?;
         if !self.handle.is_empty() {
             struct_ser.serialize_field("handle", &self.handle)?;
         }
@@ -1436,7 +1543,8 @@ impl serde::Serialize for TableItemOutput {
             struct_ser.serialize_field("isDeleted", &self.is_deleted)?;
         }
         if self.wsc_index != 0 {
-            struct_ser.serialize_field("wscIndex", ToString::to_string(&self.wsc_index).as_str())?;
+            struct_ser
+                .serialize_field("wscIndex", ToString::to_string(&self.wsc_index).as_str())?;
         }
         struct_ser.end()
     }
@@ -1479,7 +1587,10 @@ impl<'de> serde::Deserialize<'de> for TableItemOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -1513,8 +1624,8 @@ impl<'de> serde::Deserialize<'de> for TableItemOutput {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<TableItemOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut handle__ = None;
                 let mut key__ = None;
@@ -1573,7 +1684,8 @@ impl<'de> serde::Deserialize<'de> for TableItemOutput {
                                 return Err(serde::de::Error::duplicate_field("wscIndex"));
                             }
                             wsc_index__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                     }
@@ -1590,7 +1702,11 @@ impl<'de> serde::Deserialize<'de> for TableItemOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.TableItemOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.TableItemOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for TransactionInfoOutput {
@@ -1637,9 +1753,11 @@ impl serde::Serialize for TransactionInfoOutput {
         if self.timestamp.is_some() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.TransactionInfoOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.TransactionInfoOutput", len)?;
         if !self.hash.is_empty() {
-            struct_ser.serialize_field("hash", pbjson::private::base64::encode(&self.hash).as_str())?;
+            struct_ser
+                .serialize_field("hash", pbjson::private::base64::encode(&self.hash).as_str())?;
         }
         if !self.r#type.is_empty() {
             struct_ser.serialize_field("type", &self.r#type)?;
@@ -1648,10 +1766,16 @@ impl serde::Serialize for TransactionInfoOutput {
             struct_ser.serialize_field("version", ToString::to_string(&self.version).as_str())?;
         }
         if !self.state_root_hash.is_empty() {
-            struct_ser.serialize_field("stateRootHash", pbjson::private::base64::encode(&self.state_root_hash).as_str())?;
+            struct_ser.serialize_field(
+                "stateRootHash",
+                pbjson::private::base64::encode(&self.state_root_hash).as_str(),
+            )?;
         }
         if !self.event_root_hash.is_empty() {
-            struct_ser.serialize_field("eventRootHash", pbjson::private::base64::encode(&self.event_root_hash).as_str())?;
+            struct_ser.serialize_field(
+                "eventRootHash",
+                pbjson::private::base64::encode(&self.event_root_hash).as_str(),
+            )?;
         }
         if self.gas_used != 0 {
             struct_ser.serialize_field("gasUsed", ToString::to_string(&self.gas_used).as_str())?;
@@ -1663,13 +1787,19 @@ impl serde::Serialize for TransactionInfoOutput {
             struct_ser.serialize_field("epoch", ToString::to_string(&self.epoch).as_str())?;
         }
         if self.block_height != 0 {
-            struct_ser.serialize_field("blockHeight", ToString::to_string(&self.block_height).as_str())?;
+            struct_ser.serialize_field(
+                "blockHeight",
+                ToString::to_string(&self.block_height).as_str(),
+            )?;
         }
         if !self.vm_status.is_empty() {
             struct_ser.serialize_field("vmStatus", &self.vm_status)?;
         }
         if !self.accumulator_root_hash.is_empty() {
-            struct_ser.serialize_field("accumulatorRootHash", pbjson::private::base64::encode(&self.accumulator_root_hash).as_str())?;
+            struct_ser.serialize_field(
+                "accumulatorRootHash",
+                pbjson::private::base64::encode(&self.accumulator_root_hash).as_str(),
+            )?;
         }
         if let Some(v) = self.timestamp.as_ref() {
             struct_ser.serialize_field("timestamp", v)?;
@@ -1723,7 +1853,10 @@ impl<'de> serde::Deserialize<'de> for TransactionInfoOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -1760,9 +1893,12 @@ impl<'de> serde::Deserialize<'de> for TransactionInfoOutput {
                 formatter.write_str("struct aptos.block_output.v1.TransactionInfoOutput")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<TransactionInfoOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<TransactionInfoOutput, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut hash__ = None;
                 let mut r#type__ = None;
@@ -1783,7 +1919,8 @@ impl<'de> serde::Deserialize<'de> for TransactionInfoOutput {
                                 return Err(serde::de::Error::duplicate_field("hash"));
                             }
                             hash__ = Some(
-                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Type => {
@@ -1797,7 +1934,8 @@ impl<'de> serde::Deserialize<'de> for TransactionInfoOutput {
                                 return Err(serde::de::Error::duplicate_field("version"));
                             }
                             version__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::StateRootHash => {
@@ -1805,7 +1943,8 @@ impl<'de> serde::Deserialize<'de> for TransactionInfoOutput {
                                 return Err(serde::de::Error::duplicate_field("stateRootHash"));
                             }
                             state_root_hash__ = Some(
-                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::EventRootHash => {
@@ -1813,7 +1952,8 @@ impl<'de> serde::Deserialize<'de> for TransactionInfoOutput {
                                 return Err(serde::de::Error::duplicate_field("eventRootHash"));
                             }
                             event_root_hash__ = Some(
-                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::GasUsed => {
@@ -1821,7 +1961,8 @@ impl<'de> serde::Deserialize<'de> for TransactionInfoOutput {
                                 return Err(serde::de::Error::duplicate_field("gasUsed"));
                             }
                             gas_used__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Success => {
@@ -1835,7 +1976,8 @@ impl<'de> serde::Deserialize<'de> for TransactionInfoOutput {
                                 return Err(serde::de::Error::duplicate_field("epoch"));
                             }
                             epoch__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::BlockHeight => {
@@ -1843,7 +1985,8 @@ impl<'de> serde::Deserialize<'de> for TransactionInfoOutput {
                                 return Err(serde::de::Error::duplicate_field("blockHeight"));
                             }
                             block_height__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::VmStatus => {
@@ -1854,10 +1997,13 @@ impl<'de> serde::Deserialize<'de> for TransactionInfoOutput {
                         }
                         GeneratedField::AccumulatorRootHash => {
                             if accumulator_root_hash__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("accumulatorRootHash"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "accumulatorRootHash",
+                                ));
                             }
                             accumulator_root_hash__ = Some(
-                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Timestamp => {
@@ -1884,7 +2030,11 @@ impl<'de> serde::Deserialize<'de> for TransactionInfoOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.TransactionInfoOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.TransactionInfoOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for TransactionOutput {
@@ -1907,7 +2057,8 @@ impl serde::Serialize for TransactionOutput {
         if self.txn_data.is_some() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.TransactionOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.TransactionOutput", len)?;
         if let Some(v) = self.transaction_info_output.as_ref() {
             struct_ser.serialize_field("transactionInfoOutput", v)?;
         }
@@ -1967,7 +2118,10 @@ impl<'de> serde::Deserialize<'de> for TransactionOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -1999,8 +2153,8 @@ impl<'de> serde::Deserialize<'de> for TransactionOutput {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<TransactionOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut transaction_info_output__ = None;
                 let mut events__ = None;
@@ -2010,7 +2164,9 @@ impl<'de> serde::Deserialize<'de> for TransactionOutput {
                     match k {
                         GeneratedField::TransactionInfoOutput => {
                             if transaction_info_output__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("transactionInfoOutput"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "transactionInfoOutput",
+                                ));
                             }
                             transaction_info_output__ = Some(map.next_value()?);
                         }
@@ -2030,7 +2186,9 @@ impl<'de> serde::Deserialize<'de> for TransactionOutput {
                             if txn_data__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("blockMetadata"));
                             }
-                            txn_data__ = Some(transaction_output::TxnData::BlockMetadata(map.next_value()?));
+                            txn_data__ = Some(transaction_output::TxnData::BlockMetadata(
+                                map.next_value()?,
+                            ));
                         }
                         GeneratedField::User => {
                             if txn_data__.is_some() {
@@ -2042,7 +2200,8 @@ impl<'de> serde::Deserialize<'de> for TransactionOutput {
                             if txn_data__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("genesis"));
                             }
-                            txn_data__ = Some(transaction_output::TxnData::Genesis(map.next_value()?));
+                            txn_data__ =
+                                Some(transaction_output::TxnData::Genesis(map.next_value()?));
                         }
                     }
                 }
@@ -2054,7 +2213,11 @@ impl<'de> serde::Deserialize<'de> for TransactionOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.TransactionOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.TransactionOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for UserTransactionOutput {
@@ -2095,7 +2258,8 @@ impl serde::Serialize for UserTransactionOutput {
         if !self.payload.is_empty() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.UserTransactionOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.UserTransactionOutput", len)?;
         if self.version != 0 {
             struct_ser.serialize_field("version", ToString::to_string(&self.version).as_str())?;
         }
@@ -2106,16 +2270,25 @@ impl serde::Serialize for UserTransactionOutput {
             struct_ser.serialize_field("sender", &self.sender)?;
         }
         if self.sequence_number != 0 {
-            struct_ser.serialize_field("sequenceNumber", ToString::to_string(&self.sequence_number).as_str())?;
+            struct_ser.serialize_field(
+                "sequenceNumber",
+                ToString::to_string(&self.sequence_number).as_str(),
+            )?;
         }
         if self.max_gas_amount != 0 {
-            struct_ser.serialize_field("maxGasAmount", ToString::to_string(&self.max_gas_amount).as_str())?;
+            struct_ser.serialize_field(
+                "maxGasAmount",
+                ToString::to_string(&self.max_gas_amount).as_str(),
+            )?;
         }
         if let Some(v) = self.expiration_timestamp_secs.as_ref() {
             struct_ser.serialize_field("expirationTimestampSecs", v)?;
         }
         if self.gas_unit_price != 0 {
-            struct_ser.serialize_field("gasUnitPrice", ToString::to_string(&self.gas_unit_price).as_str())?;
+            struct_ser.serialize_field(
+                "gasUnitPrice",
+                ToString::to_string(&self.gas_unit_price).as_str(),
+            )?;
         }
         if let Some(v) = self.timestamp.as_ref() {
             struct_ser.serialize_field("timestamp", v)?;
@@ -2171,7 +2344,10 @@ impl<'de> serde::Deserialize<'de> for UserTransactionOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -2186,7 +2362,9 @@ impl<'de> serde::Deserialize<'de> for UserTransactionOutput {
                             "sender" => Ok(GeneratedField::Sender),
                             "sequenceNumber" => Ok(GeneratedField::SequenceNumber),
                             "maxGasAmount" => Ok(GeneratedField::MaxGasAmount),
-                            "expirationTimestampSecs" => Ok(GeneratedField::ExpirationTimestampSecs),
+                            "expirationTimestampSecs" => {
+                                Ok(GeneratedField::ExpirationTimestampSecs)
+                            }
                             "gasUnitPrice" => Ok(GeneratedField::GasUnitPrice),
                             "timestamp" => Ok(GeneratedField::Timestamp),
                             "signatures" => Ok(GeneratedField::Signatures),
@@ -2206,9 +2384,12 @@ impl<'de> serde::Deserialize<'de> for UserTransactionOutput {
                 formatter.write_str("struct aptos.block_output.v1.UserTransactionOutput")
             }
 
-            fn visit_map<V>(self, mut map: V) -> std::result::Result<UserTransactionOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            fn visit_map<V>(
+                self,
+                mut map: V,
+            ) -> std::result::Result<UserTransactionOutput, V::Error>
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut version__ = None;
                 let mut parent_signature_type__ = None;
@@ -2227,12 +2408,15 @@ impl<'de> serde::Deserialize<'de> for UserTransactionOutput {
                                 return Err(serde::de::Error::duplicate_field("version"));
                             }
                             version__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::ParentSignatureType => {
                             if parent_signature_type__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("parentSignatureType"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "parentSignatureType",
+                                ));
                             }
                             parent_signature_type__ = Some(map.next_value()?);
                         }
@@ -2247,7 +2431,8 @@ impl<'de> serde::Deserialize<'de> for UserTransactionOutput {
                                 return Err(serde::de::Error::duplicate_field("sequenceNumber"));
                             }
                             sequence_number__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::MaxGasAmount => {
@@ -2255,12 +2440,15 @@ impl<'de> serde::Deserialize<'de> for UserTransactionOutput {
                                 return Err(serde::de::Error::duplicate_field("maxGasAmount"));
                             }
                             max_gas_amount__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::ExpirationTimestampSecs => {
                             if expiration_timestamp_secs__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("expirationTimestampSecs"));
+                                return Err(serde::de::Error::duplicate_field(
+                                    "expirationTimestampSecs",
+                                ));
                             }
                             expiration_timestamp_secs__ = Some(map.next_value()?);
                         }
@@ -2269,7 +2457,8 @@ impl<'de> serde::Deserialize<'de> for UserTransactionOutput {
                                 return Err(serde::de::Error::duplicate_field("gasUnitPrice"));
                             }
                             gas_unit_price__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Timestamp => {
@@ -2306,7 +2495,11 @@ impl<'de> serde::Deserialize<'de> for UserTransactionOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.UserTransactionOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.UserTransactionOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
 impl serde::Serialize for WriteSetChangeOutput {
@@ -2329,12 +2522,14 @@ impl serde::Serialize for WriteSetChangeOutput {
         if self.change.is_some() {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("aptos.block_output.v1.WriteSetChangeOutput", len)?;
+        let mut struct_ser =
+            serializer.serialize_struct("aptos.block_output.v1.WriteSetChangeOutput", len)?;
         if self.version != 0 {
             struct_ser.serialize_field("version", ToString::to_string(&self.version).as_str())?;
         }
         if !self.hash.is_empty() {
-            struct_ser.serialize_field("hash", pbjson::private::base64::encode(&self.hash).as_str())?;
+            struct_ser
+                .serialize_field("hash", pbjson::private::base64::encode(&self.hash).as_str())?;
         }
         if !self.r#type.is_empty() {
             struct_ser.serialize_field("type", &self.r#type)?;
@@ -2389,7 +2584,10 @@ impl<'de> serde::Deserialize<'de> for WriteSetChangeOutput {
                 impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
                     type Value = GeneratedField;
 
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    fn expecting(
+                        &self,
+                        formatter: &mut std::fmt::Formatter<'_>,
+                    ) -> std::fmt::Result {
                         write!(formatter, "expected one of: {:?}", &FIELDS)
                     }
 
@@ -2421,8 +2619,8 @@ impl<'de> serde::Deserialize<'de> for WriteSetChangeOutput {
             }
 
             fn visit_map<V>(self, mut map: V) -> std::result::Result<WriteSetChangeOutput, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
+            where
+                V: serde::de::MapAccess<'de>,
             {
                 let mut version__ = None;
                 let mut hash__ = None;
@@ -2435,7 +2633,8 @@ impl<'de> serde::Deserialize<'de> for WriteSetChangeOutput {
                                 return Err(serde::de::Error::duplicate_field("version"));
                             }
                             version__ = Some(
-                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::NumberDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Hash => {
@@ -2443,7 +2642,8 @@ impl<'de> serde::Deserialize<'de> for WriteSetChangeOutput {
                                 return Err(serde::de::Error::duplicate_field("hash"));
                             }
                             hash__ = Some(
-                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0
+                                map.next_value::<::pbjson::private::BytesDeserialize<_>>()?
+                                    .0,
                             );
                         }
                         GeneratedField::Type => {
@@ -2456,19 +2656,25 @@ impl<'de> serde::Deserialize<'de> for WriteSetChangeOutput {
                             if change__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("moveModule"));
                             }
-                            change__ = Some(write_set_change_output::Change::MoveModule(map.next_value()?));
+                            change__ = Some(write_set_change_output::Change::MoveModule(
+                                map.next_value()?,
+                            ));
                         }
                         GeneratedField::MoveResource => {
                             if change__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("moveResource"));
                             }
-                            change__ = Some(write_set_change_output::Change::MoveResource(map.next_value()?));
+                            change__ = Some(write_set_change_output::Change::MoveResource(
+                                map.next_value()?,
+                            ));
                         }
                         GeneratedField::TableItem => {
                             if change__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("tableItem"));
                             }
-                            change__ = Some(write_set_change_output::Change::TableItem(map.next_value()?));
+                            change__ = Some(write_set_change_output::Change::TableItem(
+                                map.next_value()?,
+                            ));
                         }
                     }
                 }
@@ -2480,6 +2686,10 @@ impl<'de> serde::Deserialize<'de> for WriteSetChangeOutput {
                 })
             }
         }
-        deserializer.deserialize_struct("aptos.block_output.v1.WriteSetChangeOutput", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct(
+            "aptos.block_output.v1.WriteSetChangeOutput",
+            FIELDS,
+            GeneratedVisitor,
+        )
     }
 }
