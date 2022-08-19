@@ -8,7 +8,12 @@ use aptos_logger::prelude::*;
 use aptos_types::chain_id::ChainId;
 use futures::channel::mpsc;
 use futures::StreamExt;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use tokio::time::interval;
+use tokio_stream::wrappers::IntervalStream;
+
+const MAX_BYTES: usize = 128 * 1024;
+const MAX_BATCH_TIME: Duration = Duration::from_secs(5);
 
 /// Buffered
 pub(crate) struct TelemetryLogSender {
@@ -16,8 +21,6 @@ pub(crate) struct TelemetryLogSender {
     batch: Vec<String>,
     max_bytes: usize,
     current_bytes: usize,
-    max_batch_time: Duration,
-    batch_start_time: Instant,
 }
 
 impl TelemetryLogSender {
@@ -25,41 +28,107 @@ impl TelemetryLogSender {
         Self {
             sender: TelemetrySender::new(base_url, chain_id, node_config),
             batch: Vec::new(),
-            max_bytes: 128 * 1024,
+            max_bytes: MAX_BYTES,
             current_bytes: 0,
-            max_batch_time: Duration::from_secs(1),
-            batch_start_time: Instant::now(),
         }
     }
 
-    pub async fn handle_next_log(&mut self, log: String) {
+    fn drain_batch(&mut self) -> Vec<String> {
+        let batch: Vec<_> = self.batch.drain(..).collect();
+        self.current_bytes = 0;
+        return batch;
+    }
+
+    pub(crate) fn add_to_batch(&mut self, log: String) -> Option<Vec<String>> {
         if log.len() > self.max_bytes {
             warn!("Log ignored, size: {}", log.len());
             increment_log_ingest_too_large_by(1);
-            return;
+            return None;
         }
 
         self.current_bytes += log.len();
         self.batch.push(log);
 
-        if self.current_bytes > self.max_bytes
-            || self.batch_start_time.elapsed() > self.max_batch_time
-        {
-            let batch: Vec<_> = self.batch.drain(..).collect();
-            self.current_bytes = 0;
-            self.batch_start_time = Instant::now();
+        if self.current_bytes > self.max_bytes {
+            return Some(self.drain_batch());
+        }
+        None
+    }
 
+    pub async fn handle_next_log(&mut self, log: String) {
+        if let Some(batch) = self.add_to_batch(log) {
             self.sender.send_logs(batch).await;
         }
     }
 
+    pub async fn flush_batch(&mut self) {
+        if !self.batch.is_empty() {
+            let drained = self.drain_batch();
+            self.sender.send_logs(drained).await;
+        }
+    }
+
     pub async fn start(mut self, mut rx: mpsc::Receiver<String>) {
+        let mut interval = IntervalStream::new(interval(MAX_BATCH_TIME)).fuse();
+
         loop {
             tokio::select! {
                 Some(log) = rx.next() => {
                     self.handle_next_log(log).await;
                 }
+                _ = interval.select_next_some() => {
+                    self.flush_batch().await;
+                }
             }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::telemetry_log_sender::{TelemetryLogSender, MAX_BYTES};
+    use aptos_config::config::NodeConfig;
+    use aptos_types::chain_id::ChainId;
+
+    #[tokio::test]
+    async fn test_add_to_batch() {
+        let mut sender = TelemetryLogSender::new("test", ChainId::test(), &NodeConfig::default());
+
+        for _i in 0..2 {
+            // Large batch should not be allowed
+            let batch = sender.add_to_batch("a".repeat(MAX_BYTES + 1));
+            assert!(batch.is_none());
+
+            // Batch is flushed before reaching size
+            let to_send = vec!["test"];
+            let batch = sender.add_to_batch(to_send[0].to_string());
+            assert!(batch.is_none());
+            let batch = sender.drain_batch();
+            assert_eq!(batch.len(), 1);
+            assert_eq!(batch, to_send);
+
+            // Create batch that reaches max bytes
+            let bytes_per_string = 11;
+            let num_strings = (MAX_BYTES + 1) / bytes_per_string
+                + if (MAX_BYTES + 1) % bytes_per_string == 0 {
+                    0
+                } else {
+                    1
+                };
+            let to_send: Vec<_> = (0..num_strings).map(|i| format!("{:11}", i)).collect();
+            to_send.iter().enumerate().for_each(|(i, s)| {
+                // Large batch should not be allowed
+                let batch = sender.add_to_batch("a".repeat(MAX_BYTES + 1));
+                assert!(batch.is_none());
+
+                let batch = sender.add_to_batch(s.clone());
+                if i == (num_strings - 1) {
+                    assert!(batch.is_some());
+                    assert_eq!(batch.unwrap(), to_send);
+                } else {
+                    assert!(batch.is_none());
+                }
+            })
         }
     }
 }
