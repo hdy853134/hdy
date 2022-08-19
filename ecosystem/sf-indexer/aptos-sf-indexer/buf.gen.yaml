@@ -3,7 +3,7 @@ plugins:
   - name: prost
     out: src/pb
 
-  - remote: tonic
+  - name: tonic
     out: src/pb
 
   - name: prost-crate

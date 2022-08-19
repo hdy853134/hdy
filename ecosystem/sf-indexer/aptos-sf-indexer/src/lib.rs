@@ -15,6 +15,7 @@ pub mod counters;
 pub mod database;
 pub mod indexer;
 pub mod models;
+pub mod pb;
 pub mod proto;
 pub mod schema;
 pub mod substream_processors;
