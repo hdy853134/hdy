@@ -3,8 +3,8 @@
 
 use crate::{
     counters::{
-        GOT_CONNECTION, LATEST_PROCESSED_BLOCK, SUBSTREAM_ERRORS, SUBSTREAM_INVOCATIONS,
-        SUBSTREAM_SUCCESSES, UNABLE_TO_GET_CONNECTION,
+        GOT_CONNECTION, LATEST_PROCESSED_BLOCK, PROCESSOR_ERRORS, PROCESSOR_INVOCATIONS,
+        PROCESSOR_SUCCESSES, UNABLE_TO_GET_CONNECTION,
     },
     database::{execute_with_better_error, PgDbPool, PgPoolConnection},
     indexer::{errors::BlockProcessingError, processing_result::ProcessingResult},
@@ -84,7 +84,7 @@ pub trait SubstreamProcessor: Send + Sync + Debug {
         if input_substream_name != self.substream_module_name() {
             panic!("Wrong processor detected: this processor can only process module {},  module {} detected.", self.substream_module_name(), input_substream_name);
         }
-        SUBSTREAM_INVOCATIONS
+        PROCESSOR_INVOCATIONS
             .with_label_values(&[self.substream_module_name()])
             .inc();
 
@@ -121,7 +121,7 @@ pub trait SubstreamProcessor: Send + Sync + Debug {
             self.substream_module_name(),
             processing_result.block_height
         );
-        SUBSTREAM_SUCCESSES
+        PROCESSOR_SUCCESSES
             .with_label_values(&[self.substream_module_name()])
             .inc();
         LATEST_PROCESSED_BLOCK
@@ -138,7 +138,7 @@ pub trait SubstreamProcessor: Send + Sync + Debug {
             self.substream_module_name(),
             bpe
         );
-        SUBSTREAM_ERRORS
+        PROCESSOR_ERRORS
             .with_label_values(&[self.substream_module_name()])
             .inc();
         let psm = IndexerState::from_block_processing_err(bpe);

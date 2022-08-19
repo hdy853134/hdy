@@ -7,32 +7,32 @@ use aptos_metrics_core::{
 };
 use once_cell::sync::Lazy;
 
-/// Number of times a given substream has been invoked
-pub static SUBSTREAM_INVOCATIONS: Lazy<IntCounterVec> = Lazy::new(|| {
+/// Number of times a given processor has been invoked
+pub static PROCESSOR_INVOCATIONS: Lazy<IntCounterVec> = Lazy::new(|| {
     register_int_counter_vec!(
-        "indexer_substream_invocation_count",
-        "Number of times a given substream has been invoked",
-        &["substream_name"]
+        "indexer_processor_invocation_count",
+        "Number of times a given processor has been invoked",
+        &["processor_name"]
     )
     .unwrap()
 });
 
-/// Number of times any given substream has raised an error
-pub static SUBSTREAM_ERRORS: Lazy<IntCounterVec> = Lazy::new(|| {
+/// Number of times any given processor has raised an error
+pub static PROCESSOR_ERRORS: Lazy<IntCounterVec> = Lazy::new(|| {
     register_int_counter_vec!(
-        "indexer_substream_error_count",
-        "Number of times any given substream has raised an error",
-        &["substream_name"]
+        "indexer_processor_error_count",
+        "Number of times any given processor has raised an error",
+        &["processor_name"]
     )
     .unwrap()
 });
 
-/// Number of times any given substream has completed successfully
-pub static SUBSTREAM_SUCCESSES: Lazy<IntCounterVec> = Lazy::new(|| {
+/// Number of times any given processor has completed successfully
+pub static PROCESSOR_SUCCESSES: Lazy<IntCounterVec> = Lazy::new(|| {
     register_int_counter_vec!(
-        "indexer_substream_success_count",
-        "Number of times a given substream has completed successfully",
-        &["substream_name"]
+        "indexer_processor_success_count",
+        "Number of times a given processor has completed successfully",
+        &["processor_name"]
     )
     .unwrap()
 });
@@ -58,9 +58,9 @@ pub static GOT_CONNECTION: Lazy<IntCounter> = Lazy::new(|| {
 /// Max block processed
 pub static LATEST_PROCESSED_BLOCK: Lazy<IntGaugeVec> = Lazy::new(|| {
     register_int_gauge_vec!(
-        "indexer_substream_latest_block",
-        "Latest block a substream has fully consumed",
-        &["substream_name"]
+        "indexer_processor_latest_block",
+        "Latest block a processor has fully consumed",
+        &["processor_name"]
     )
     .unwrap()
 });
