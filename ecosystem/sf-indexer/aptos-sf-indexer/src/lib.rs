@@ -15,24 +15,10 @@ pub mod counters;
 pub mod database;
 pub mod indexer;
 pub mod models;
-pub mod pb;
+// pub mod pb;
 pub mod proto;
 pub mod schema;
 pub mod substream_processors;
 pub mod substreams;
 pub mod substreams_stream;
 pub mod util;
-
-/// By default, skips test unless `INDEXER_DATABASE_URL` is set.
-/// In CI, will explode if `INDEXER_DATABASE_URL` is NOT set.
-pub fn should_skip_pg_tests() -> bool {
-    if std::env::var("CIRCLECI").is_ok() {
-        std::env::var("INDEXER_DATABASE_URL").expect("must set 'INDEXER_DATABASE_URL' in CI!");
-    }
-    if std::env::var("INDEXER_DATABASE_URL").is_ok() {
-        false
-    } else {
-        aptos_logger::warn!("`INDEXER_DATABASE_URL` is not set: skipping indexer tests");
-        true
-    }
-}
