@@ -13,6 +13,7 @@ This tutorial introduces the Aptos SDKs and how to generate, submit, and verify 
 
 ## Step 1: Pick an SDK
 
+* [Official Aptos Typescript SDK][typescript-sdk]
 * [Official Aptos Python SDK][python-sdk]
 
 ## Step 2: Run the Example
@@ -20,11 +21,17 @@ This tutorial introduces the Aptos SDKs and how to generate, submit, and verify 
 Each SDK provides an examples directory. This tutorial covers the `transfer-coin` example.
 
 <Tabs>
-  <TabItem value="python" label="Python">
-
-      In the SDK directory run: `python -m examples.transfer-coin`
-  </TabItem>
   <TabItem value="typescript" label="Typescript">
+    In the SDK examples directory run:
+
+    cd examples/typescript
+    yarn run transfer_coin
+  </TabItem>
+  <TabItem value="python" label="Python">
+    In the SDK directory run:
+
+    python -m examples.transfer-coin
+
   </TabItem>
 </Tabs>
 
@@ -70,14 +77,14 @@ The example file leverages helper functions to interact with the [REST API][rest
 In the first step, the example initializes both the REST and Faucet clients. The REST client interacts with the REST API, whereas the Faucet client is a devnet service for creating and funding accounts.
 
 <Tabs>
+  <TabItem value="typescript" label="Typescript">
+  </TabItem>
   <TabItem value="python" label="Python">
 
 ```
 rest_client = RestClient(NODE_URL)
 faucet_client = FaucetClient(FAUCET_URL, rest_client)
 ```
-  </TabItem>
-  <TabItem value="typescript" label="Typescript">
   </TabItem>
 </Tabs>
 
@@ -92,14 +99,14 @@ The URLs for both services, by default, point to our devnet services, however, t
 The next step is to create two accounts from the locally. [Accounts][account_basics] represent both on and off-chain state. The off-chain state consists of an address and the public, private key pair used to authenticate ownership. This step demonstrates how to generate that off-chain state.
 
 <Tabs>
+  <TabItem value="typescript" label="Typescript">
+  </TabItem>
   <TabItem value="python" label="Python">
 
 ```
 alice = Account.generate()
 bob = Account.generate()
 ```
-  </TabItem>
-  <TabItem value="typescript" label="Typescript">
   </TabItem>
 </Tabs>
 
@@ -108,14 +115,14 @@ bob = Account.generate()
 In Aptos, each account must have an on-chain representation in order to support receive tokens, coins, and interacting in other DApps. In Aptos, an account represents a medium for storing assets, hence it must be explicitly created. This example leverages the Faucet to create and fund Alice's account and to just create Bob's:
 
 <Tabs>
+  <TabItem value="typescript" label="Typescript">
+  </TabItem>
   <TabItem value="python" label="Python">
 
 ```
 faucet_client.fund_account(alice.address(), 20_000)
 faucet_client.fund_account(bob.address(), 0)
 ```
-  </TabItem>
-  <TabItem value="typescript" label="Typescript">
   </TabItem>
 </Tabs>
 
@@ -124,6 +131,8 @@ faucet_client.fund_account(bob.address(), 0)
 In this step, the SDK translates a single call into the process of querying a resource and reading a field from that resource.
 
 <Tabs>
+  <TabItem value="typescript" label="Typescript">
+  </TabItem>
   <TabItem value="python" label="Python">
 
 ```
@@ -140,8 +149,6 @@ def account_balance(self, account_address: str) -> int:
     )["data"]["coin"]["value"]
 ```
   </TabItem>
-  <TabItem value="typescript" label="Typescript">
-  </TabItem>
 </Tabs>
 
 ### Step 4.5: Transferring
@@ -149,6 +156,8 @@ def account_balance(self, account_address: str) -> int:
 Like the previous step, this is another helper step that constructs a transaction that transfers the coins from Alice to Bob. For correctly generated transactions, the API will return a transaction hash that can be used in the ensuing step to check on the transaction status. Aptos does perform a handful of validation checks on submission and if any of those fail, the user will instead be given an error. These validations include the transaction signature, unused sequence number, and submitting the transaction to the appropriate chain.
 
 <Tabs>
+  <TabItem value="typescript" label="Typescript">
+  </TabItem>
   <TabItem value="python" label="Python">
 
 ```
@@ -185,8 +194,6 @@ Breaking the above down into pieces:<br/>
 (4) The transaction arguments must be placed into `TransactionArgument`s with type specifiers (`Serializer.{type}`), that will serialize the value into the appropriate type at transaction generation time.
 
   </TabItem>
-  <TabItem value="typescript" label="Typescript">
-  </TabItem>
 </Tabs>
 
 ### Step 4.6: Waiting for transaction resolution
@@ -194,16 +201,17 @@ Breaking the above down into pieces:<br/>
 The transaction hash can be used to query the status of a transaction:
 
 <Tabs>
+  <TabItem value="typescript" label="Typescript">
+  </TabItem>
   <TabItem value="python" label="Python">
 
 ```
 rest_client.wait_for_transaction(txn_hash)
 ```
   </TabItem>
-  <TabItem value="typescript" label="Typescript">
-  </TabItem>
 </Tabs>
 
 [account_basics]: /concepts/basics-accounts
 [python-sdk]: /sdks/python-sdk
+[typescript-sdk]: /sdks/typescript-sdk
 [rest_spec]: https://fullnode.devnet.aptoslabs.com/v1/spec#/
